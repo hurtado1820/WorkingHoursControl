@@ -30,8 +30,8 @@ export class EmployeeService {
     return this.repo.find({where: {code: filters?.code}});
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} employee`;
+  findOne(id: string):Promise<Employee | null> {
+    return this.repo.findOneBy({id} );
   }
 
   update(id: number, updateEmployeeDto: UpdateEmployeeDto) {
