@@ -56,6 +56,20 @@
             </div>
 
             <div class="dashboard">
+                <!-- Cronómetro -->
+                <div class="timer-card">
+                    <div class="timer-header">
+                        <i class="fas fa-stopwatch"></i>
+                        <h3>Cronómetro</h3>
+                    </div>
+                    <div class="timer-display" id="timer-display">
+                        00:00:00
+                    </div>
+                    <div class="timer-date" id="timer-date">
+                        Fecha: --/--/----
+                    </div>
+                </div>
+
                 <!-- Controles -->
                 <div class="controls-card">
                     <div class="controls-header">
@@ -92,6 +106,44 @@
             </div>
             <div class="popup-footer">
                 <button id="popup-ok" class="btn btn-primary">Aceptar</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Popup para crear empleado -->
+    <div id="create-employee-popup" class="popup">
+        <div class="popup-content">
+            <div class="popup-header">
+                <i class="fas fa-user-plus"></i>
+                <h3>Crear Empleado</h3>
+                <button class="create-employee-close">&times;</button>
+            </div>
+            <div class="popup-body">
+                <p>El código ingresado no existe. Crea una cuenta rápidamente:</p>
+                <div class="input-group" style="margin-top: 15px;">
+                    <label for="new-employee-code">Código de Empleado</label>
+                    <input 
+                        type="text" 
+                        id="new-employee-code" 
+                        placeholder="Código único"
+                        maxlength="20"
+                        autocomplete="off"
+                    >
+                </div>
+                <div class="input-group" style="margin-top: 10px;">
+                    <label for="new-employee-name">Nombre Completo</label>
+                    <input 
+                        type="text" 
+                        id="new-employee-name" 
+                        placeholder="Tu nombre"
+                        maxlength="100"
+                        autocomplete="off"
+                    >
+                </div>
+            </div>
+            <div class="popup-footer">
+                <button id="cancel-create-btn" class="btn btn-secondary">Cancelar</button>
+                <button id="create-employee-btn" class="btn btn-primary">Crear Empleado</button>
             </div>
         </div>
     </div>

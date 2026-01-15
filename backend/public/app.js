@@ -1,7 +1,7 @@
 class WorkTimeTracker {
     constructor() {
         // Configuración de la API
-        this.apiBaseUrl = 'http://192.168.1.7:3000/api'; // Cambia esto por tu URL
+        this.apiBaseUrl = 'http://localhost:3000/api'; 
         this.requestTimeout = 5000; // Timeout de 5 segundos para las solicitudes
         this.currentEmployee = null;
         this.currentWorkSession = null;
@@ -17,18 +17,31 @@ class WorkTimeTracker {
             validateBtn: document.getElementById('validate-btn'),
             logoutBtn: document.getElementById('logout-btn'),
             employeeName: document.getElementById('employee-name'),
+            statusIndicator: document.getElementById('status-indicator'),
+            statusText: document.getElementById('status-text'),
+            statusDot: document.querySelector('.status-dot'),
+            startTimeEl: document.getElementById('start-time'),
+            elapsedTimeEl: document.getElementById('elapsed-time'),
             timerDisplay: document.getElementById('timer-display'),
             timerDate: document.getElementById('timer-date'),
             startBtn: document.getElementById('start-btn'),
             endBtn: document.getElementById('end-btn'),
             controlsMessage: document.getElementById('controls-message'),
+            lastStart: document.getElementById('last-start'),
+            lastDuration: document.getElementById('last-duration'),
             popup: document.getElementById('alert-popup'),
             overlay: document.getElementById('overlay'),
             popupTitle: document.getElementById('popup-title'),
             popupMessage: document.getElementById('popup-message'),
             popupIcon: document.getElementById('popup-icon'),
             popupOk: document.getElementById('popup-ok'),
-            popupClose: document.querySelector('.popup-close')
+            popupClose: document.querySelector('.popup-close'),
+            createEmployeePopup: document.getElementById('create-employee-popup'),
+            newEmployeeCode: document.getElementById('new-employee-code'),
+            newEmployeeName: document.getElementById('new-employee-name'),
+            createEmployeeBtn: document.getElementById('create-employee-btn'),
+            cancelCreateBtn: document.getElementById('cancel-create-btn'),
+            createEmployeeClose: document.querySelector('.create-employee-close')
         };
 
         this.init();
@@ -70,6 +83,18 @@ class WorkTimeTracker {
         this.elements.popupOk.addEventListener('click', () => this.hidePopup());
         this.elements.popupClose.addEventListener('click', () => this.hidePopup());
         this.elements.overlay.addEventListener('click', () => this.hidePopup());
+
+        // Popup de crear empleado
+        this.elements.createEmployeeBtn.addEventListener('click', () => this.createNewEmployee());
+        this.elements.cancelCreateBtn.addEventListener('click', () => this.hideCreateEmployeePopup());
+        this.elements.createEmployeeClose.addEventListener('click', () => this.hideCreateEmployeePopup());
+
+        // Enter en campos de crear empleado
+        this.elements.newEmployeeName.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') {
+                this.createNewEmployee();
+            }
+        });
     }
 
     async validateEmployee() {
@@ -120,7 +145,71 @@ class WorkTimeTracker {
                 }
                 
             } else {
-                this.showPopup('error', 'Error', 'Código de empleado inválido');
+                // Empleado no existe, ofrecer crear uno
+                this.showCreateEmployeePopup(code);
+            }
+        } catch (error) {
+            console.error('Error:', error);
+            this.showPopup('error', 'Error de conexión', 'No se pudo conectar con el servidor');
+        }
+    }
+
+    showCreateEmployeePopup(code) {
+        // Guardar el código para usarlo después
+        this.pendingEmployeeCode = code;
+        this.elements.newEmployeeCode.value = code;
+        this.elements.newEmployeeName.value = '';
+        this.elements.createEmployeePopup.classList.add('active');
+        this.elements.overlay.classList.add('active');
+        this.elements.newEmployeeName.focus();
+    }
+
+    hideCreateEmployeePopup() {
+        this.elements.createEmployeePopup.classList.remove('active');
+        this.elements.overlay.classList.remove('active');
+        this.pendingEmployeeCode = null;
+    }
+
+    async createNewEmployee() {
+        const code = this.elements.newEmployeeCode.value.trim();
+        const name = this.elements.newEmployeeName.value.trim();
+
+        if (!code) {
+            this.showPopup('error', 'Error', 'Por favor ingresa un código de empleado');
+            return;
+        }
+
+        if (!name) {
+            this.showPopup('error', 'Error', 'Por favor ingresa tu nombre');
+            return;
+        }
+
+        try {
+            const response = await this.fetchWithTimeout(`${this.apiBaseUrl}/employees`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    code: code,
+                    name: name
+                })
+            });
+
+            const data = await response.json();
+
+            if (response.ok) {
+                // Empleado creado exitosamente
+                this.currentEmployee = data;
+                localStorage.setItem('currentEmployee', JSON.stringify(this.currentEmployee));
+                this.hideCreateEmployeePopup();
+                this.showWorkScreen();
+                this.updateNoSessionDisplay();
+                this.showPopup('success', 'Empleado Creado', 'Tu cuenta ha sido creada exitosamente');
+            } else if (response.status === 400) {
+                this.showPopup('error', 'Error', 'El código de empleado ya existe');
+            } else {
+                this.showPopup('error', 'Error', 'No se pudo crear el empleado');
             }
         } catch (error) {
             console.error('Error:', error);
@@ -250,6 +339,7 @@ class WorkTimeTracker {
 
     updateTimerDisplay() {
         const formattedTime = this.formatDuration(this.elapsedSeconds);
+        this.elements.timerDisplay.textContent = formattedTime;
         
         if (this.startTime) {
             const startDate = this.startTime.toLocaleDateString('es-ES', {
@@ -264,16 +354,20 @@ class WorkTimeTracker {
                 second: '2-digit'
             });
             
-            // Mostrar actualización en la consola si es necesario
-            console.log(`Tiempo: ${formattedTime}`);
+            this.elements.timerDate.textContent = `Iniciado: ${startDate} ${startTime}`;
         }
     }
 
     updateActiveSessionDisplay() {
         this.elements.controlsMessage.textContent = 'Tu jornada está en curso. Presiona "Terminar Jornada" cuando finalices.';
+        
+        // Actualizar display inicial
+        this.updateTimerDisplay();
     }
 
     updateNoSessionDisplay() {
+        this.elements.timerDisplay.textContent = '00:00:00';
+        this.elements.timerDate.textContent = 'Fecha: --/--/----';
         this.elements.controlsMessage.textContent = 'Presiona "Iniciar Jornada" para comenzar a registrar tu tiempo';
         
         this.elements.startBtn.disabled = false;
