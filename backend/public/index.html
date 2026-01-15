@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Control de Jornada Laboral</title>
+    <link rel="stylesheet" href="./styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+    <div class="container">
+        <!-- Pantalla de login -->
+        <div id="login-screen" class="screen active">
+            <div class="logo-container">
+                <i class="fas fa-clock fa-3x"></i>
+                <h1>Control de Jornada</h1>
+            </div>
+            
+            <div class="login-form">
+                <div class="input-group">
+                    <label for="employee-code">
+                        <i class="fas fa-id-card"></i> Código de Empleado
+                    </label>
+                    <input 
+                        type="text" 
+                        id="employee-code" 
+                        placeholder="Ingresa tu código"
+                        maxlength="20"
+                        autocomplete="off"
+                    >
+                    <div class="input-hint">Presiona Enter para validar</div>
+                </div>
+                
+                <button id="validate-btn" class="btn btn-primary">
+                    <i class="fas fa-sign-in-alt"></i> Validar Código
+                </button>
+                
+                <div class="info-box">
+                    <i class="fas fa-info-circle"></i>
+                    <p>Ingresa tu código único de empleado para registrar tu jornada laboral</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Pantalla de control de jornada -->
+        <div id="work-screen" class="screen">
+            <div class="header">
+                <button id="logout-btn" class="btn-icon" title="Cerrar sesión">
+                    <i class="fas fa-sign-out-alt"></i>
+                </button>
+                <h2>Control de Jornada</h2>
+                <div class="employee-info">
+                    <i class="fas fa-user"></i>
+                    <span id="employee-name">Empleado</span>
+                </div>
+            </div>
+
+            <div class="dashboard">
+                <!-- Controles -->
+                <div class="controls-card">
+                    <div class="controls-header">
+                        <i class="fas fa-cogs"></i>
+                        <h3>Acciones</h3>
+                    </div>
+                    <div class="controls-buttons">
+                        <button id="start-btn" class="btn btn-success btn-large">
+                            <i class="fas fa-play"></i> Iniciar Jornada
+                        </button>
+                        <button id="end-btn" class="btn btn-danger btn-large" disabled>
+                            <i class="fas fa-stop"></i> Terminar Jornada
+                        </button>
+                    </div>
+                    <div class="controls-info">
+                        <i class="fas fa-lightbulb"></i>
+                        <p id="controls-message">Presiona "Iniciar Jornada" para comenzar a registrar tu tiempo</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Popup de alerta -->
+    <div id="alert-popup" class="popup">
+        <div class="popup-content">
+            <div class="popup-header">
+                <i id="popup-icon" class="fas fa-info-circle"></i>
+                <h3 id="popup-title">Información</h3>
+                <button class="popup-close">&times;</button>
+            </div>
+            <div class="popup-body">
+                <p id="popup-message">Este es un mensaje de ejemplo</p>
+            </div>
+            <div class="popup-footer">
+                <button id="popup-ok" class="btn btn-primary">Aceptar</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Overlay para popup -->
+    <div id="overlay" class="overlay"></div>
+
+    <script src="./app.js"></script>
+</body>
+</html>
