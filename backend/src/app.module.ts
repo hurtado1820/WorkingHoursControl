@@ -5,13 +5,14 @@ import { EmployeeModule } from './employee/employee.module';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { Employee } from './employee/entities/employee.entity';
 import { WorkdayModule } from './workday/workday.module';
+import { Workday } from './workday/entities/workday.entity';
 
 @Module({
-  imports: [EmployeeModule,TypeOrmModule.forRoot({
+  imports: [EmployeeModule,WorkdayModule,TypeOrmModule.forRoot({
       type: 'sqlite',
       database: 'test.sqlite',
       entities: [
-        Employee
+        Employee, Workday
       ],
       synchronize: true
     }), WorkdayModule,],
