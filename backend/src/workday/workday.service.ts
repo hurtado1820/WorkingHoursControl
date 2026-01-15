@@ -42,17 +42,14 @@ export class WorkdayService {
       throw new BadRequestException('The employee does not have an active workday');
     }
 
-    if (!workDayDto.timeWorked) {
-      const leave = new Date(lastWorkday.leave);
-      const entry = new Date(lastWorkday.entry);
-      const timeInSeconds = Math.floor((+leave - +entry) / 1000);
-      workDayDto.timeWorked = timeInSeconds;
+    if (!workDayDto.timeInSeconds || !workDayDto.leave) {
+      throw new BadRequestException('The end time and total time must be provided');
     }
 
     return this.update(workDayDto);
   }
 
-  private findLastWorkdayByEmployeeID(employeeID: string): Promise<Workday | null> {
+  findLastWorkdayByEmployeeID(employeeID: string): Promise<Workday | null> {
     return this.repo.findOne({
       where: { employeeID },
       order: { entry: 'DESC' },

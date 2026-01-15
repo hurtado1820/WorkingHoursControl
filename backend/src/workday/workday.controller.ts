@@ -8,13 +8,18 @@ export class WorkdayController {
   constructor(private readonly workdayService: WorkdayService) {}
 
   @Post('opt/entry')
-  iniciar(@Body() workDayDto: CreateWorkdayDto) {
+  startWorkday(@Body() workDayDto: CreateWorkdayDto) {
     return this.workdayService.startWorkday(workDayDto);
   }
 
   @Post('opt/leave')
-  terminar(@Body() workDayDto: UpdateWorkdayDto) {
+  finishWorkday(@Body() workDayDto: UpdateWorkdayDto) {
     return this.workdayService.finishWorkday(workDayDto);
+  }
+
+  @Get('opt/last/:employeeID')
+  lastWorkday(@Param('employeeID') employeeID: string) {
+    return this.workdayService.findLastWorkdayByEmployeeID(employeeID);
   }
 
   // @Post()
